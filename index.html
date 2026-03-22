@@ -123,6 +123,7 @@
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             margin-top: 2rem;
+            position: relative;
         }
 
         .app-header {
@@ -137,12 +138,90 @@
             font-weight: 500;
         }
 
-        .unity-frame {
+        .app-wrapper {
+            position: relative;
             width: 100%;
             height: 600px;
-            border: none;
-            display: block;
             background: #000;
+        }
+
+        .unity-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: #000;
+        }
+
+        .unity-frame.active {
+            display: block;
+        }
+
+        /* Play Button Overlay */
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 73, 94, 0.9) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .play-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .play-button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1.5rem 4rem;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .play-button:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(231, 76, 60, 0.6);
+        }
+
+        .play-button:active {
+            transform: translateY(-1px);
+        }
+
+        .play-icon {
+            font-size: 2rem;
+        }
+
+        .play-text {
+            font-size: 1.3rem;
+        }
+
+        .play-hint {
+            margin-top: 2rem;
+            opacity: 0.8;
+            font-size: 1rem;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
         }
 
         .app-note {
@@ -206,6 +285,32 @@
             opacity: 0.8;
         }
 
+        /* Loading animation */
+        .loading-spinner {
+            display: none;
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             header h1 {
@@ -224,8 +329,23 @@
                 padding: 1.5rem;
             }
 
-            .unity-frame {
+            .app-wrapper {
                 height: 400px;
+            }
+
+            .play-button {
+                padding: 1rem 2.5rem;
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .play-icon {
+                font-size: 1.5rem;
+            }
+
+            .play-text {
+                font-size: 1.1rem;
             }
 
             .features-grid {
@@ -251,7 +371,7 @@
                 padding: 2rem 0;
             }
 
-            .unity-frame {
+            .app-wrapper {
                 height: 300px;
             }
 
@@ -259,37 +379,10 @@
                 font-size: 0.8rem;
                 padding: 0.75rem;
             }
-        }
 
-        /* Loading animation */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 400px;
-            background: #000;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .loading::after {
-            content: '';
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 1rem;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
+            .play-hint {
+                font-size: 0.85rem;
+                padding: 0 1rem;
             }
         }
     </style>
@@ -314,8 +407,8 @@
                 <div class="about-card">
                     <h3>🎯 Наша цель</h3>
                     <p>Создать виртуальный музей, где каждый памятник и арт-объект города будет представлен в
-                        детализированном 3D-формате. Мы не просто фотографируем — мы создаём полноценные модели,
-                        которые можно исследовать.</p>
+                        детализированном 3D-формате. Мы не просто фотографируем — мы создаём полноценные модели, которые
+                        можно исследовать.</p>
                 </div>
                 <div class="about-card">
                     <h3>🚀 Технологии</h3>
@@ -333,13 +426,40 @@
                 <div class="app-header">
                     <h3>🎮 Приложение музея</h3>
                 </div>
-                <iframe
-                    src="./Build/index.html"
-                    class="unity-frame"
-                    title="VR Музей"
-                    allowfullscreen
-                >
-                </iframe>
+                <div class="app-wrapper">
+                    <!-- Play Overlay -->
+                    <div
+                        class="play-overlay"
+                        id="playOverlay"
+                    >
+                        <div
+                            class="loading-spinner"
+                            id="loadingSpinner"
+                        ></div>
+                        <button
+                            class="play-button"
+                            id="playButton"
+                            onclick="startApp()"
+                        >
+                            <span class="play-icon">▶</span>
+                            <span class="play-text">Запустить музей</span>
+                        </button>
+                        <p class="play-hint">
+                            🎧 Рекомендуется использовать наушники<br>
+                            💻 Лучше всего работает на компьютере
+                        </p>
+                    </div>
+
+                    <!-- Unity iframe (hidden until play) -->
+                    <iframe
+                        id="unityFrame"
+                        class="unity-frame"
+                        data-src="./Build/index.html"
+                        title="VR Музей"
+                        allowfullscreen
+                    >
+                    </iframe>
+                </div>
                 <div class="app-note">
                     💡 Для лучшего опыта рекомендуется использовать приложение на компьютере.
                 </div>
@@ -384,6 +504,48 @@
     </footer>
 
     <script>
+        let appStarted = false;
+
+        function startApp() {
+            if (appStarted) return;
+            appStarted = true;
+
+            const playOverlay = document.getElementById('playOverlay');
+            const playButton = document.getElementById('playButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const unityFrame = document.getElementById('unityFrame');
+
+            // Show loading spinner, hide button
+            playButton.style.display = 'none';
+            loadingSpinner.classList.add('active');
+
+            // Set iframe src to start loading
+            unityFrame.src = unityFrame.getAttribute('data-src');
+            unityFrame.classList.add('active');
+
+            // Wait for iframe to load, then hide overlay
+            unityFrame.addEventListener('load', function () {
+                loadingSpinner.classList.remove('active');
+                playOverlay.classList.add('hidden');
+
+                // Remove overlay from DOM after animation
+                setTimeout(() => {
+                    playOverlay.style.display = 'none';
+                }, 500);
+            });
+
+            // Fallback: hide overlay after 10 seconds even if load event doesn't fire
+            setTimeout(() => {
+                if (loadingSpinner.classList.contains('active')) {
+                    loadingSpinner.classList.remove('active');
+                    playOverlay.classList.add('hidden');
+                    setTimeout(() => {
+                        playOverlay.style.display = 'none';
+                    }, 500);
+                }
+            }, 10000);
+        }
+
         // Smooth scrolling for better UX
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -397,18 +559,6 @@
                 }
             });
         });
-
-        // Add loading state for iframe
-        const iframe = document.querySelector('.unity-frame');
-        if (iframe) {
-            iframe.addEventListener('load', function () {
-                console.log('Unity app loaded');
-            });
-
-            iframe.addEventListener('error', function () {
-                console.error('Failed to load Unity app');
-            });
-        }
     </script>
 
 </body>

@@ -120,9 +120,10 @@
         .app-container {
             background: var(--card-bg);
             border-radius: 15px;
-            overflow: hidden;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-header {
@@ -140,8 +141,21 @@
         .app-wrapper {
             position: relative;
             width: 100%;
-            height: 600px;
+            height: 60vh;
+            /* 60% от высоты viewport */
+            min-height: 350px;
+            /* минимум 350px */
+            max-height: 650px;
+            /* максимум 650px */
             background: #000;
+        }
+
+        @media (max-width: 768px) {
+            .app-wrapper {
+                height: 50dvh;
+                /* dynamic viewport height */
+                min-height: 300px;
+            }
         }
 
         .unity-frame {
@@ -150,10 +164,35 @@
             border: none;
             display: none;
             background: #000;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         .unity-frame.active {
             display: block;
+        }
+
+        /* Для мобильных — ещё компактнее */
+        @media (max-width: 768px) {
+            .app-wrapper {
+                height: 50vh;
+                /* 50% от высоты экрана */
+                min-height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-wrapper {
+                height: 45vh;
+                /* 45% от высоты экрана */
+                min-height: 280px;
+            }
+
+            .app-recommendation {
+                font-size: 0.8rem;
+                padding: 0.75rem;
+            }
         }
 
         /* Play Button Overlay */
@@ -421,12 +460,12 @@
     </section>
 
     <section class="vr-app">
+        <h2 class="section-title">Виртуальный музей</h2>
+        <div class="app-header">
+            <h3>🎮 Приложение музея</h3>
+        </div>
         <div class="container">
-            <h2 class="section-title">Виртуальный музей</h2>
             <div class="app-container">
-                <div class="app-header">
-                    <h3>🎮 Приложение музея</h3>
-                </div>
                 <div class="app-wrapper">
                     <!-- Play Overlay -->
                     <div
@@ -446,7 +485,6 @@
                             <span class="play-text">Запустить музей</span>
                         </button>
                         <p class="play-hint">
-                            🎧 Рекомендуется использовать наушники<br>
                             💻 Лучше всего работает на компьютере
                         </p>
                     </div>
